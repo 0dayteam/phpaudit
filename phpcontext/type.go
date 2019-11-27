@@ -1,14 +1,13 @@
-package audit
+package phpcontext
 
-import (
-	"phpaudit/phpvar"
-)
+import "phpaudit/phpvar"
 
-type ContextManage struct {
+type Context struct {
 	// IncludeTable includeManage
 	VarTable      GlobalVar
 	FuncTable     funcTable
 	ConstantTable constantTable
+	StaticTable   staticTable
 }
 
 // php constant map
@@ -16,9 +15,16 @@ type constantTable struct {
 	constant map[string]phpvar.PhpString
 }
 
-var ConstantTable = constantTable{}
+// var ConstantTable = constantTable{}
+
+type staticTable struct {
+	constant map[string]phpvar.PhpString
+}
+
+// var StaticTable = constantTable{}
 
 // php include file map
+/*
 type includeManage struct {
 	IncludePath []string
 	IncludeCode map[string]*PhpCode
@@ -34,7 +40,7 @@ func (s *includeManage) IsInclude(path string) bool {
 }
 
 var IncludeManage = includeManage{}
-
+*/
 type LocalVar struct {
 	Var    map[string]phpvar.PhpVar
 	Static map[string]phpvar.PhpVar

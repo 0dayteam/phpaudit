@@ -3,6 +3,7 @@ package nodetype
 import (
 	"github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/expr/assign"
 	"github.com/z7zmey/php-parser/node/scalar"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"reflect"
@@ -114,3 +115,12 @@ var IsValueType = NodeIsType(valueType)
 var IsBoolType = NodeIsType(boolType)
 
 var IsRetBoolType = NodeIsType(retBoolType)
+
+func NodeType(node1 node.Node) func(n node.Node) bool {
+	return func(n node.Node) bool {
+		return reflect.TypeOf(node1) == reflect.TypeOf(n)
+	}
+
+}
+
+var IsAssignType = NodeType(&assign.Assign{})

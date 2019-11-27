@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
-	src := bytes.NewBufferString(`<?php $a = 'test'';`)
+	src := bytes.NewBufferString(`
+<?php function my_function(string $a, $b = "aa"){
+    $ret = $a . $b;
+    return $ret;
+};`)
 
 	parser := php7.NewParser(src, "example.php")
 	parser.Parse()

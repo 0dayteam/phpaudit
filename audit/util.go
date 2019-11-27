@@ -2,6 +2,7 @@ package audit
 
 import (
 	"github.com/z7zmey/php-parser/node"
+	"github.com/z7zmey/php-parser/node/name"
 	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/php7"
 	"phpaudit/nodetype"
@@ -66,4 +67,14 @@ func IsExec(code *php7.Parser) bool {
 
 func IdentToValue(n node.Node) string {
 	return n.(*node.Identifier).Value
+}
+
+func getName(n node.Node) string {
+	n2 := n.(*name.Name)
+	ret := ""
+	for _, value := range n2.GetParts() {
+		v := value.(*name.NamePart)
+		ret += v.Value
+	}
+	return ret
 }
