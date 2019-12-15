@@ -16,10 +16,10 @@ type FileParser struct {
 	FileParserInfo
 	status    string
 	scope     []map[string]interface{}
-	localVars map[string]node.Node
+	localVars map[string]phptype.Value
 }
 
-func (f *FileParser) GeVar(name string) node.Node {
+func (f *FileParser) GeVar(name string) phptype.Value {
 	if f.status == Root {
 		return f.globalVars[name]
 	} else {
@@ -27,14 +27,14 @@ func (f *FileParser) GeVar(name string) node.Node {
 	}
 }
 
-func (f *FileParser) SetVar(name string, n node.Node) {
+func (f *FileParser) SetVar(name string, v phptype.Value) {
 	if f.status == Root {
-		f.globalVars[name] = n
+		f.globalVars[name] = v
 	} else {
-		f.localVars[name] = n
+		f.localVars[name] = v
 	}
 }
-func (f *FileParser) GetCurVars() map[string]node.Node {
+func (f *FileParser) GetCurVars() map[string]phptype.Value {
 	if f.status == Root {
 		return f.globalVars
 	}
@@ -45,7 +45,7 @@ func (f *FileParser) GetConstant(name string) {
 
 }
 
-func (f *FileParser) SetConstant(name string, value *phptype.Constant) {
+func (f *FileParser) SetConstant(name string, value phptype.Value) {
 
 }
 

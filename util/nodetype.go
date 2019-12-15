@@ -26,7 +26,9 @@ func NodeIsConstant(n node.Node) bool {
 }
 
 const (
-	String = "*scalar.String"
-	Root   = "*node.Root"
-	Int    = "*scalar.Lnum"
+	String             = "*scalar.String"
+	Root               = "*node.Root"
+	Int                = "*scalar.Lnum"
+	Var                = "*expr.Variable"
+	EncapsedStringPart = "*scalar.EncapsedStringPart"
 )

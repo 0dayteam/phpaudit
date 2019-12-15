@@ -6,24 +6,9 @@ func LogError(e error) {
 
 }
 
-const (
-	_ = iota
-	E_ERROR
-	E_WARNING
-	E_PARSE
-	E_NOTICE
-	E_CORE_ERROR
-	E_CORE_WARNING
-	E_COMPILE_ERROR
-	E_COMPILE_WARNING
-	E_USER_ERROR
-	E_USER_WARNING
-	E_USER_NOTICE
-	E_STRICT
-	E_RECOVERABLE_ERROR
-	E_DEPRECATED
-	E_USER_DEPRECATED
-	E_ALL
-)
-
 var NodeTypeError = errors.New("节点类型错误")
+var WaitParserError = errors.New("等待另一个文件解析完成")
+var IncludeFileParserError = errors.New("include的文件解析失败")
+var NoDefinitionError = errors.New("变量或类或函数未定义")
+var ExitError = errors.New("调用exit")
+var NoConstantError = errors.New("不是一个常量")

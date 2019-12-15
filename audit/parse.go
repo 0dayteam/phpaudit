@@ -32,7 +32,7 @@ type FileParserInfo struct {
 	namespace string
 
 	// global var
-	globalVars map[string]node.Node
+	globalVars map[string]phptype.Value
 
 	// function list
 	Functions map[string]node.Node
@@ -41,11 +41,7 @@ type FileParserInfo struct {
 	Class map[string]node.Node
 
 	// constant
-	Constants map[string]phptype.Constant
-}
-
-type Value interface {
-	Value() interface{}
+	Constants map[string]phptype.Value
 }
 
 func fileError(f find.File, err error, errInfo string) {
