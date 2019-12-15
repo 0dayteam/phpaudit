@@ -3,26 +3,21 @@ package audit
 import (
 	"github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/scalar"
-	"phpaudit/nodetype"
-	"phpaudit/phpvar"
+	"phpaudit/util"
 )
 
-func ParseVar(n node.Node) (v phpvar.PhpVar) {
-	if nodetype.IsStringType(n) {
+func ParseVar(n node.Node) interface{} {
+	if util.NodeIsType(n, "scalar.String") {
 		return ParseString(n)
 	}
-	return
-}
-
-func ParseVarToString(n node.Node) string {
 	return ""
 }
 
-func ParseString(n node.Node) (str phpvar.PhpVar) {
+func ParseString(n node.Node) (str string) {
 	switch n.(type) {
 	case *scalar.String:
 		// todo  Handling escape characters
-		str = phpvar.NewPhpString(n)
+		str = n.(*scalar.String).Value
 	case *scalar.Heredoc:
 		// todo
 	case *scalar.Encapsed:
