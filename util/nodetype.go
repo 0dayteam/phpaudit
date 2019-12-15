@@ -3,6 +3,7 @@ package util
 import (
 	"github.com/z7zmey/php-parser/node"
 	"reflect"
+	"strings"
 )
 
 func NodeIsType(n node.Node, t string) bool {
@@ -17,6 +18,11 @@ func NodeInTypes(n node.Node, types []string) bool {
 		}
 	}
 	return false
+}
+
+func NodeIsConstant(n node.Node) bool {
+	nodeType := reflect.TypeOf(n).String()
+	return strings.HasPrefix(nodeType, "*scalar")
 }
 
 const (

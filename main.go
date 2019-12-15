@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	src := bytes.NewBufferString(`<?php include "test";`)
+	src := bytes.NewBufferString(`<?php const a="1"; const a=call();`)
 
 	parser := php7.NewParser(src, "example.php")
 	parser.Parse()

@@ -1,4 +1,6 @@
-package error
+package errors
+
+import "errors"
 
 func LogError(e error) {
 
@@ -23,3 +25,5 @@ const (
 	E_USER_DEPRECATED
 	E_ALL
 )
+
+var NodeTypeError = errors.New("节点类型错误")

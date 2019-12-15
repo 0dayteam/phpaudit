@@ -4,21 +4,24 @@ import (
 	"fmt"
 	"github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/node/expr"
+	"github.com/z7zmey/php-parser/node/stmt"
 	"github.com/z7zmey/php-parser/walker"
+	"phpaudit/phptype"
+	"phpaudit/util"
 	"reflect"
 	"strings"
 )
 
 type FileParser struct {
-	ParserInfo FileParserInfo
-	status     string
-	scope      []map[string]interface{}
-	localVars  map[string]node.Node
+	FileParserInfo
+	status    string
+	scope     []map[string]interface{}
+	localVars map[string]node.Node
 }
 
 func (f *FileParser) GeVar(name string) node.Node {
 	if f.status == Root {
-		return f.ParserInfo.globalVars[name]
+		return f.globalVars[name]
 	} else {
 		return f.localVars[name]
 	}
@@ -26,14 +29,30 @@ func (f *FileParser) GeVar(name string) node.Node {
 
 func (f *FileParser) SetVar(name string, n node.Node) {
 	if f.status == Root {
-		f.ParserInfo.globalVars[name] = n
+		f.globalVars[name] = n
 	} else {
 		f.localVars[name] = n
 	}
 }
+func (f *FileParser) GetCurVars() map[string]node.Node {
+	if f.status == Root {
+		return f.globalVars
+	}
+	return f.localVars
+}
 
-func NewFileParser(parserInfo FileParserInfo) *FileParser {
-	return &FileParser{ParserInfo: parserInfo}
+func (f *FileParser) GetConstant(name string) {
+
+}
+
+func (f *FileParser) SetConstant(name string, value *phptype.Constant) {
+
+}
+
+func NewFileParser(parserInfo *FileParserInfo) *FileParser {
+	return &FileParser{
+		FileParserInfo: *parserInfo,
+	}
 }
 
 func (f *FileParser) Status() string {
@@ -64,7 +83,7 @@ func (f *FileParser) EnterNode(w walker.Walkable) bool {
 	return true
 }
 
-func (f *FileParser) ParserError(info FileParserInfo) {
+func (f *FileParser) ParserError(info *FileParserInfo) {
 	if info.IsError {
 		panic(IncludeFileParserError)
 	}
@@ -89,7 +108,28 @@ func (f *FileParser) ParserClass(n node.Node) {
 	f.SetStatus(Class)
 }
 
+func (f *FileParser) ParserNamespace(n node.Node) {
+	f.namespace, _ = util.ParseName(n.(*stmt.Namespace).NamespaceName)
+}
+
+func (f *FileParser) ParserConstant(n node.Node) {
+	constant := n.(*stmt.Constant)
+	name, _ := util.ParseName(constant.ConstantName)
+
+	if util.NodeIsConstant(constant.Expr) {
+		if v, err := util.ParseConstant(constant.Expr, f.globalVars); err != nil {
+			// todo  解析带有变量的字符串
+			return
+		} else {
+			f.SetConstant(name, v)
+		}
+	}
+}
+
 func (f *FileParser) ParserExit(n node.Node) {
+	if f.status == Root {
+		panic(ExitError)
+	}
 }
 
 func (f *FileParser) parserInclude(n node.Node) {
@@ -102,7 +142,7 @@ func (f *FileParser) parserInclude(n node.Node) {
 	if ok {
 		panic(WaitParserError)
 	}
-	parser := file.(FileParserInfo)
+	parser := file.(*FileParserInfo)
 	f.ParserError(parser)
 
 	if parser.Err != nil {

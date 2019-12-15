@@ -16,7 +16,7 @@ func TestNewPhpFile(t *testing.T) {
 
 	shell, err = NewPhpFile("./fake.php")
 	if err == nil {
-		t.Error("no open file error")
+		t.Error("no open file errors")
 		return
 	}
 }

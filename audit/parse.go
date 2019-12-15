@@ -6,16 +6,17 @@ import (
 	"github.com/z7zmey/php-parser/php7"
 	"phpaudit/finder/find"
 	"phpaudit/phpread"
+	"phpaudit/phptype"
 	"sync"
 )
 
 var FileMap = sync.Map{}
 
 type FileParserInfo struct {
-	// error
+	// errors
 	Err error
 
-	// parse is error
+	// parse is errors
 	IsError bool
 
 	// root node
@@ -40,7 +41,7 @@ type FileParserInfo struct {
 	Class map[string]node.Node
 
 	// constant
-	Constants map[string]Value
+	Constants map[string]phptype.Constant
 }
 
 type Value interface {
@@ -56,7 +57,7 @@ func ParseFile(f find.File) {
 	log.Info("start parser", f.Name)
 	file, err := phpread.NewPhpFile(f.Name)
 	if err != nil {
-		fileError(f, err, fmt.Sprintf("read file %s error msg: %s", f.Name, err))
+		fileError(f, err, fmt.Sprintf("read file %s errors msg: %s", f.Name, err))
 		return
 	}
 	errs := file.Parser()
@@ -64,7 +65,7 @@ func ParseFile(f find.File) {
 		fileError(f, err, fmt.Sprintf("parser file %s eror", f.Name))
 		return
 	}
-	info := FileParserInfo{
+	info := &FileParserInfo{
 		Err:     nil,
 		IsError: false,
 		Root:    file.GetRootNode(),
@@ -75,7 +76,7 @@ func ParseFile(f find.File) {
 	fileParser(info)
 }
 
-func fileParser(i FileParserInfo) *FileParser {
+func fileParser(i *FileParserInfo) *FileParser {
 	parser := NewFileParser(i)
 	i.Root.Walk(parser)
 	return parser
