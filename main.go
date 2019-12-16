@@ -1,30 +1,25 @@
 package main
 
 import (
-	"bytes"
-	"fmt"
-	"os"
-
-	"github.com/z7zmey/php-parser/php7"
-	"github.com/z7zmey/php-parser/visitor"
+	"context"
+	"io/ioutil"
+	"phpaudit/audit"
+	"phpaudit/config"
 )
 
+func checkErr(err error) {
+	if err != nil {
+
+		panic(err)
+	}
+}
+
 func main() {
+	data, err := ioutil.ReadFile("config.yaml")
+	checkErr(err)
+	conf, err := config.NewRunConfig(data)
+	checkErr(err)
 
-	src := bytes.NewBufferString(`<?php const a="1"; const a=call();`)
-
-	parser := php7.NewParser(src, "example.php")
-	parser.Parse()
-
-	for _, e := range parser.GetErrors() {
-		fmt.Println(e)
-	}
-
-	visitor := visitor.Dumper{
-		Writer: os.Stdout,
-		Indent: "",
-	}
-
-	rootNode := parser.GetRootNode()
-	rootNode.Walk(&visitor)
+	ctx := context.TODO()
+	audit.Run(ctx, *conf)
 }

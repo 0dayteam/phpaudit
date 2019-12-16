@@ -1,0 +1,11 @@
+log_config:
+  Log_level: 1,
+  log_path: "/tmp/test.log"
+  log_type: "stdout"
+finder_config:
+  ignore_dir:
+    - .git
+    -  .idea
+  ignore_file:
+    -  readme.md
+  timeout: 15

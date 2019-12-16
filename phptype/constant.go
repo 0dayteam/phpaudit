@@ -2,7 +2,6 @@ package phptype
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Constant struct {

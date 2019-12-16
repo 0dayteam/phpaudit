@@ -42,6 +42,7 @@ func (f *File) String() string {
 type finder struct {
 	root string
 
+	// ignore dirname
 	ignoreDir []string
 
 	// Pattern is used with Match.

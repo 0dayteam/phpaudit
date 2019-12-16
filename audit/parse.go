@@ -4,13 +4,11 @@ import (
 	"fmt"
 	"github.com/z7zmey/php-parser/node"
 	"github.com/z7zmey/php-parser/php7"
+	"phpaudit/errors"
 	"phpaudit/finder/find"
 	"phpaudit/phpread"
 	"phpaudit/phptype"
-	"sync"
 )
-
-var FileMap = sync.Map{}
 
 type FileParserInfo struct {
 	// errors
@@ -45,12 +43,18 @@ type FileParserInfo struct {
 }
 
 func fileError(f find.File, err error, errInfo string) {
-	FileMap.Store(f.Name, FileParserInfo{Err: err, IsError: true})
+	SetFileMap(f.Name, &FileParserInfo{Err: err, IsError: true})
 	log.Error(errInfo)
 }
 
 func ParseFile(f find.File) {
-	log.Info("start parser", f.Name)
+	log.Debug("start parser %s", f.Name)
+
+	info := &FileParserInfo{
+		Err: errors.UnfinishedError,
+	}
+	SetFileMap(f.Name, info)
+
 	file, err := phpread.NewPhpFile(f.Name)
 	if err != nil {
 		fileError(f, err, fmt.Sprintf("read file %s errors msg: %s", f.Name, err))
@@ -61,7 +65,8 @@ func ParseFile(f find.File) {
 		fileError(f, err, fmt.Sprintf("parser file %s eror", f.Name))
 		return
 	}
-	info := &FileParserInfo{
+
+	info = &FileParserInfo{
 		Err:     nil,
 		IsError: false,
 		Root:    file.GetRootNode(),
@@ -69,7 +74,9 @@ func ParseFile(f find.File) {
 		parent:  nil,
 	}
 
-	fileParser(info)
+	info = &fileParser(info).FileParserInfo
+
+	SetFileMap(f.Name, info)
 }
 
 func fileParser(i *FileParserInfo) *FileParser {
